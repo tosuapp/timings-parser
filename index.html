@@ -15,6 +15,10 @@
             margin-top: 6em;
         }
 
+        h1 {
+            text-align: center;
+        }
+
         select {
             margin: 0 auto;
             padding: 0.6em 1.7em;
@@ -134,7 +138,11 @@
             div.classList.add('block');
             div.innerHTML = `<div id="${file}"></div>`;
 
+            const title = document.createElement('h1');
+            title.innerHTML = file;
 
+
+            document.body.append(title);
             document.body.appendChild(select);
             document.body.append(div);
 
