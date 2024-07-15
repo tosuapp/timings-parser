@@ -15,7 +15,7 @@
             margin-top: 6em;
         }
 
-        #selectro {
+        select {
             margin: 0 auto;
             padding: 0.6em 1.7em;
             font-size: 30px;
@@ -31,7 +31,6 @@
     <script>
         let selected = '';
         let chart = '';
-        let stats = [];
 
         const colors = [
             '#FF004F',
@@ -92,23 +91,32 @@
 
 
         const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+
+        const files = ['cpp', 'rust'];
+
         async function main(params) {
-            const request = await fetch('/rust.json');
-            const text = await request.text();
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
 
 
-            stats = JSON.parse(text);
-            buildUI();
-            buildGraph();
+                const request = await fetch(`/${file}.json`);
+                const text = await request.text();
+
+
+                window[`stats-${file}`] = JSON.parse(text);
+                buildUI(file);
+                buildGraph(file);
+            };
         };
 
 
-        function buildUI() {
+        function buildUI(file) {
             const select = document.createElement("select");
-            select.id = "selectro";
+            select.id = `sl-${file}`;
 
 
-            const options = Object.keys(stats);
+            const options = Object.keys(window[`stats-${file}`]);
             options.forEach((optionText) => {
                 const option = document.createElement("option");
                 option.text = optionText;
@@ -118,34 +126,37 @@
 
             select.addEventListener("change", () => {
                 selected = select.value;
-                buildGraph();
+                buildGraph(select.id.replace('sl-', ''));
             });
 
 
             const div = document.createElement('div');
             div.classList.add('block');
-            div.innerHTML = `<div id="graph"></div>`;
+            div.innerHTML = `<div id="${file}"></div>`;
 
 
             document.body.appendChild(select);
             document.body.append(div);
 
 
-            chart = new ApexCharts(document.querySelector(`#graph`), graph_options)
-            chart.render();
+            window[file] = new ApexCharts(document.querySelector(`#${file}`), graph_options)
+            window[file].render();
         };
 
 
-        function buildGraph() {
-            const keys = Object.keys(stats);
+        function buildGraph(file) {
+            const keys = Object.keys(window[`stats-${file}`]);
 
             const key = selected || keys[0];
-            const data = stats[key];
+            const data = window[`stats-${file}`][key];
 
 
+            const options = JSON.parse(JSON.stringify(graph_options))
             graph_options.series = data.series;
             graph_options.xaxis.categories = data.xaxis.categories;
-            chart.updateOptions(graph_options);
+
+
+            window[file].updateOptions(graph_options);
         };
 
 
