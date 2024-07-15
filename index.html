@@ -159,7 +159,12 @@
 
             select.addEventListener("change", () => {
                 selected = select.value;
-                buildGraph(select.id.replace('sl-', ''));
+                // buildGraph(select.id.replace('sl-', ''));
+                files.forEach(r => {
+                    buildGraph(r);
+
+                    document.getElementById(`sl-${r}`).value = selected;
+                });
             });
 
 
@@ -191,6 +196,7 @@
 
             const key = selected || keys[0];
             const data = window[`stats-${file}`][key];
+            if (data == null) return;
 
 
             const options = JSON.parse(JSON.stringify(graph_options))
