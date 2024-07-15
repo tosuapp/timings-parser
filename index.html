@@ -17,8 +17,34 @@
         .block {
             font-family: 'Montserrat', sans-serif;
             text-align: center;
-            margin-bottom: 3em;
+
             margin-top: 6em;
+        }
+
+        .avg {
+            margin-bottom: 3em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1em;
+        }
+
+        .avg>div::before {
+            content: '';
+            width: 1em;
+            height: 1em;
+            display: block;
+            background: var(--color);
+            border-radius: 1em;
+        }
+
+        .avg>div {
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            gap: 0.5em;
+            white-space: nowrap;
         }
 
         h1 {
@@ -147,10 +173,15 @@
             const title = document.createElement('h1');
             title.innerHTML = file;
 
+            const average = document.createElement('div');
+            average.id = `avg-${file}`;
+            average.classList.add('avg');
+
 
             document.body.append(title);
             document.body.appendChild(select);
             document.body.append(div);
+            document.body.append(average);
 
 
             window[file] = new ApexCharts(document.querySelector(`#${file}`), graph_options)
@@ -169,6 +200,17 @@
             graph_options.series = data.series;
             graph_options.xaxis.categories = data.xaxis.categories;
 
+
+            const average = document.getElementById(`avg-${file}`);
+
+            average.innerHTML = '';
+            Object.keys(data.average).forEach((r, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `${r}: ${data.average[r].toFixed(3)}`;
+                div.style.setProperty('--color', colors[index])
+
+                average.appendChild(div);
+            });
 
             window[file].updateOptions(graph_options);
         };

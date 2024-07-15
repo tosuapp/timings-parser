@@ -54,6 +54,22 @@ function main() {
             };
 
 
+            const array = Object.keys(graphs);
+            for (let i = 0; i < array.length; i++) {
+                const key = array[i];
+                const value = graphs[key];
+
+                for (let s = 0; s < value.series.length; s++) {
+                    const series = value.series[s];
+
+                    const sum = series.data.reduce((a, value) => parseFloat(a) + +value, 0);
+                    if (!value.average) value.average = {};
+
+                    value.average[series.name] = sum / series.data.length;
+                };
+            };
+
+
             fs.writeFileSync(output_path, JSON.stringify(graphs), 'utf8');
         };
     } catch (error) {
